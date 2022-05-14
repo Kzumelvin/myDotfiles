@@ -1,0 +1,12 @@
+call plug#begin('~/.config/nvim/autoload/plugged')
+  Plug 'scrooloose/nerdtree'
+  Plug 'sheerun/vim-polyglot'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'Valloric/YouCompleteMe'
+  Plug 'morhetz/gruvbox'
+  Plug 'vim-scripts/indentpython.vim'
+  Plug 'vim-syntastic/syntastic'
+  Plug 'nvie/vim-flake8'
+  Plug 'tmhedberg/SimpylFold'
+  Plug 'davidhalter/jedi-vim'
+call plug#end()

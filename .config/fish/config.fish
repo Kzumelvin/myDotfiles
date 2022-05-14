@@ -1,7 +1,6 @@
 if status is-interactive
-	set -U fish_greeting "🐟"
+	set -U fish_greeting "Hallo Kevin"
 end
 
-alias vim="/usr/bin/nvim"
-alias vi="/usr/bin/nvim"
-alias py="/usr/bin/python3"
+alias py="/usr/local/bin/python3"
+alias vim="/opt/homebrew/bin/nvim"
