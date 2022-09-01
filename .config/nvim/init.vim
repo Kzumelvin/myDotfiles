@@ -8,5 +8,4 @@ autocmd VimEnter * NERDTree | wincmd p
 " End NERDTree if file is closed
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
-" Setting up Gruvbox Theme from Plugins
-autocmd vimenter * ++nested colorscheme gruvbox
+let g:loaded_python_provider = 0
