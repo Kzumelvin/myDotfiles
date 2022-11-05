@@ -10,4 +10,7 @@ require("kevin.plugins.nvim-cmp")
 require("kevin.plugins.lsp.mason")
 require("kevin.plugins.lsp.lspsaga")
 require("kevin.plugins.lsp.lspconfig")
-
+require("kevin.plugins.lsp.null-ls")
+require("kevin.plugins.autopairs")
+require("kevin.plugins.treesitter")
+require("kevin.plugins.gitsigns")
