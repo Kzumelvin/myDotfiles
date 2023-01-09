@@ -1,0 +1,22 @@
+theme = "gruvbox"
+
+[editor]
+true-color = true
+line-number = "relative"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.lsp]
+display-messages = true
+
+[keys.normal]
+C-s = ":w"
+C-x = ":wq"
+C-y = ":q!"
+g = { a = "code_action" }
+
+[keys.insert]
+j = { k = "normal_mode" }
