@@ -6,11 +6,18 @@
 - fish config
 - alacritty config
 
-### NVIM
+### NVIM (AstroNVIM Baseconfig)
 
-#### Plugin Installation
+#### Plugin Installation Mason
 
-- [vim-plug](https://github.com/junegunn/vim-plug) - Vim plugin manager
+- docker-compose-language-server (Docker Compose)
+- html-lsp (HTML) 
+- jedi-language-server (Python)
+- mdx-analyzer
+- tailwindcss-language-server
+- ts-standard
+- typescript-language-server
+
 
 ### fish
 
