@@ -69,11 +69,23 @@ fi
 # --- usage: session cost, 5h/7d rate limits, context window fill ---
 cost=$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')
 five_h_pct=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+five_h_reset=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 seven_d_pct=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 ctx_pct=$(printf '%s' "$input" | jq -r '.context_window.used_percentage // empty')
 
+five_h_reset_str=""
+if [ -n "$five_h_reset" ]; then
+  five_h_reset_str=$(date -d "@$five_h_reset" '+%H:%M' 2>/dev/null)
+fi
+
 usage_parts=()
-[ -n "$five_h_pct" ] && usage_parts+=("${BOLD_YELLOW}${five_h_pct%.*}%${YELLOW} 5h")
+if [ -n "$five_h_pct" ]; then
+  if [ -n "$five_h_reset_str" ]; then
+    usage_parts+=("${BOLD_YELLOW}${five_h_pct%.*}%${YELLOW} 5h (reset ${five_h_reset_str})")
+  else
+    usage_parts+=("${BOLD_YELLOW}${five_h_pct%.*}%${YELLOW} 5h")
+  fi
+fi
 [ -n "$ctx_pct" ] && usage_parts+=("${BOLD_YELLOW}${ctx_pct%.*}%${YELLOW} ctx")
 [ -n "$seven_d_pct" ] && usage_parts+=("${BOLD_YELLOW}${seven_d_pct%.*}%${YELLOW} 7d")
 [ -n "$cost" ] && usage_parts+=("API-Wert ${BOLD_YELLOW}$(printf '~$%.2f' "$cost")${YELLOW}")
