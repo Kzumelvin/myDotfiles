@@ -1,8 +1,9 @@
 # myDotfiles
 
 Persönliche Konfigurationen für [Neovim](https://neovim.io/) mit
-[AstroNvim v6](https://astronvim.com/), für [tmux](https://github.com/tmux/tmux)
-und für [Claude Code](https://claude.com/claude-code).
+[AstroNvim v6](https://astronvim.com/), für [tmux](https://github.com/tmux/tmux),
+für [Claude Code](https://claude.com/claude-code) und für
+[Codex](https://developers.openai.com/codex/).
 
 ## Inhalt
 
@@ -23,16 +24,23 @@ organisiert. Jeder Ordner spiegelt dabei die Struktur relativ zu `$HOME` wider:
 │               ├── community.lua  # optionale AstroCommunity-Imports
 │               ├── plugins/       # optionale Plugin-Anpassungen
 │               └── polish.lua     # optionale abschließende Konfiguration
-└── claude/
+├── claude/
     └── .claude/
         ├── settings.json          # -> ~/.claude/settings.json
         └── statusline-command.sh  # -> ~/.claude/statusline-command.sh
+└── codex/
+    └── .codex/
+        └── config.toml            # -> ~/.codex/config.toml
 ```
 
 Das `claude`-Paket enthält bewusst nur die eigene Statusline-Konfiguration
 (`settings.json`, `statusline-command.sh`) und keine der übrigen, teils
 sensiblen oder lokalen Dateien unter `~/.claude` (z. B. `.credentials.json`,
 `history.jsonl`, `sessions/`).
+
+Das `codex`-Paket enthält ebenfalls nur die eigentliche Konfiguration
+(`config.toml`). Zugangsdaten, Sitzungsverläufe, Datenbanken, Logs, Caches und
+lokale Skills unter `~/.codex` bleiben bewusst außerhalb des Repositories.
 
 Die Neovim-Konfiguration basiert auf AstroNvim v6. `lazy.nvim` wird beim ersten
 Start automatisch installiert. Die Dateien unter `nvim/.config/nvim/lua/plugins/`
@@ -47,6 +55,8 @@ Zeile deaktiviert.
 - tmux, falls die tmux-Konfiguration verwendet werden soll
 - [Claude Code](https://claude.com/claude-code) mit `jq`, falls die
   Statusline-Konfiguration verwendet werden soll
+- [Codex](https://developers.openai.com/codex/), falls die Codex-Konfiguration
+  verwendet werden soll
 - eine [Nerd Font](https://www.nerdfonts.com/) für die korrekte Darstellung
   der Neovim-Symbole (empfohlen)
 
@@ -59,6 +69,7 @@ mv ~/.config/nvim ~/.config/nvim.bak
 mv ~/.tmux.conf ~/.tmux.conf.bak
 mv ~/.claude/settings.json ~/.claude/settings.json.bak
 mv ~/.claude/statusline-command.sh ~/.claude/statusline-command.sh.bak
+mv ~/.codex/config.toml ~/.codex/config.toml.bak
 ```
 
 Nicht vorhandene Dateien oder Verzeichnisse können dabei einfach übersprungen
@@ -67,7 +78,7 @@ werden. Anschließend das Repository klonen und die Pakete mit Stow verlinken:
 ```sh
 git clone https://github.com/Kzumelvin/myDotfiles.git ~/myDotfiles
 cd ~/myDotfiles
-stow -t ~ nvim tmux claude
+stow -t ~ nvim tmux claude codex
 ```
 
 Wichtig: Das Target (`-t ~`) muss immer explizit angegeben werden, da Stow
