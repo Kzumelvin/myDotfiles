@@ -51,8 +51,8 @@ Nicht vorhandene Dateien oder Verzeichnisse können dabei einfach übersprungen
 werden. Anschließend das Repository klonen und die Pakete mit Stow verlinken:
 
 ```sh
-git clone https://github.com/Kzumelvin/myDotfiles.git ~/Projects/myDotfiles
-cd ~/Projects/myDotfiles
+git clone https://github.com/Kzumelvin/myDotfiles.git ~/myDotfiles
+cd ~/myDotfiles
 stow -t ~ nvim tmux
 ```
 
