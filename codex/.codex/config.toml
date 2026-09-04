@@ -1,0 +1,17 @@
+[projects."/home/kevin/Work"]
+trust_level = "trusted"
+
+[projects."/home/kevin"]
+trust_level = "trusted"
+
+[projects."/home/kevin/Projects/myDotfiles"]
+trust_level = "trusted"
+
+[projects."/home/kevin/Projects/tcg-home-base"]
+trust_level = "trusted"
+
+[projects."/home/kevin/myDotfiles"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["current-dir", "git-branch", "five-hour-limit", "weekly-limit"]
