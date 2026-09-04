@@ -1,7 +1,8 @@
 # myDotfiles
 
 Persönliche Konfigurationen für [Neovim](https://neovim.io/) mit
-[AstroNvim v6](https://astronvim.com/) und für [tmux](https://github.com/tmux/tmux).
+[AstroNvim v6](https://astronvim.com/), für [tmux](https://github.com/tmux/tmux)
+und für [Claude Code](https://claude.com/claude-code).
 
 ## Inhalt
 
@@ -12,17 +13,26 @@ organisiert. Jeder Ordner spiegelt dabei die Struktur relativ zu `$HOME` wider:
 .
 ├── tmux/
 │   └── .tmux.conf                  # -> ~/.tmux.conf
-└── nvim/
-    └── .config/
-        └── nvim/                  # -> ~/.config/nvim
-            ├── init.lua           # Einstiegspunkt der Neovim-Konfiguration
-            ├── lazy-lock.json     # festgeschriebene Plugin-Versionen
-            └── lua/
-                ├── lazy_setup.lua # AstroNvim- und lazy.nvim-Setup
-                ├── community.lua  # optionale AstroCommunity-Imports
-                ├── plugins/       # optionale Plugin-Anpassungen
-                └── polish.lua     # optionale abschließende Konfiguration
+├── nvim/
+│   └── .config/
+│       └── nvim/                  # -> ~/.config/nvim
+│           ├── init.lua           # Einstiegspunkt der Neovim-Konfiguration
+│           ├── lazy-lock.json     # festgeschriebene Plugin-Versionen
+│           └── lua/
+│               ├── lazy_setup.lua # AstroNvim- und lazy.nvim-Setup
+│               ├── community.lua  # optionale AstroCommunity-Imports
+│               ├── plugins/       # optionale Plugin-Anpassungen
+│               └── polish.lua     # optionale abschließende Konfiguration
+└── claude/
+    └── .claude/
+        ├── settings.json          # -> ~/.claude/settings.json
+        └── statusline-command.sh  # -> ~/.claude/statusline-command.sh
 ```
+
+Das `claude`-Paket enthält bewusst nur die eigene Statusline-Konfiguration
+(`settings.json`, `statusline-command.sh`) und keine der übrigen, teils
+sensiblen oder lokalen Dateien unter `~/.claude` (z. B. `.credentials.json`,
+`history.jsonl`, `sessions/`).
 
 Die Neovim-Konfiguration basiert auf AstroNvim v6. `lazy.nvim` wird beim ersten
 Start automatisch installiert. Die Dateien unter `nvim/.config/nvim/lua/plugins/`
@@ -35,6 +45,8 @@ Zeile deaktiviert.
 - [GNU Stow](https://www.gnu.org/software/stow/)
 - Neovim in einer mit AstroNvim v6 kompatiblen Version
 - tmux, falls die tmux-Konfiguration verwendet werden soll
+- [Claude Code](https://claude.com/claude-code) mit `jq`, falls die
+  Statusline-Konfiguration verwendet werden soll
 - eine [Nerd Font](https://www.nerdfonts.com/) für die korrekte Darstellung
   der Neovim-Symbole (empfohlen)
 
@@ -45,6 +57,8 @@ Vorhandene Konfigurationen sollten zunächst gesichert werden:
 ```sh
 mv ~/.config/nvim ~/.config/nvim.bak
 mv ~/.tmux.conf ~/.tmux.conf.bak
+mv ~/.claude/settings.json ~/.claude/settings.json.bak
+mv ~/.claude/statusline-command.sh ~/.claude/statusline-command.sh.bak
 ```
 
 Nicht vorhandene Dateien oder Verzeichnisse können dabei einfach übersprungen
@@ -53,7 +67,7 @@ werden. Anschließend das Repository klonen und die Pakete mit Stow verlinken:
 ```sh
 git clone https://github.com/Kzumelvin/myDotfiles.git ~/myDotfiles
 cd ~/myDotfiles
-stow -t ~ nvim tmux
+stow -t ~ nvim tmux claude
 ```
 
 Wichtig: Das Target (`-t ~`) muss immer explizit angegeben werden, da Stow
@@ -86,6 +100,19 @@ Der tmux-Präfix wurde von `Ctrl-b` auf `Ctrl-x` geändert.
 | `Ctrl-x`, `Alt-h/j/k/l` | Aktuellen Bereich in 5er-Schritten vergrößern oder verkleinern |
 
 Zusätzlich ist die Mausunterstützung aktiviert.
+
+## Claude-Code-Statusline
+
+`claude/.claude/statusline-command.sh` zeigt in der Claude-Code-Statusline:
+
+- aktuelles Verzeichnis (letzte 2 Pfadsegmente) und Git-Branch inkl. Status
+  (`⇡`/`⇣` ahead/behind, `✗` geänderte, `?` unversionierte Dateien)
+- 5-Stunden- und 7-Tage-Rate-Limit in Prozent (`rate_limits`, nur mit
+  Pro-/Max-Abo verfügbar)
+- Kontextfenster-Auslastung in Prozent
+- den rechnerischen API-Gegenwert der Session als `API-Wert ~$X.XX` — **keine
+  echten Kosten**, da diese im Pro-/Max-Abo bereits durch die Flatrate
+  abgedeckt sind
 
 ## Anpassungen aktivieren
 
