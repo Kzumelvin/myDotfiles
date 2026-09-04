@@ -7,10 +7,15 @@
 input=$(cat)
 dir=$(printf '%s' "$input" | jq -r '.workspace.current_dir')
 
-BOLD_CYAN='\033[1;36m'
-CYAN='\033[36m'
-YELLOW='\033[33m'
-RESET='\033[0m'
+BOLD_CYAN=$'\033[1;36m'
+CYAN=$'\033[36m'
+YELLOW=$'\033[33m'
+BOLD_YELLOW=$'\033[1;33m'
+MAGENTA=$'\033[35m'
+RESET=$'\033[0m'
+
+# --- current model ---
+model_name=$(printf '%s' "$input" | jq -r '.model.display_name // .model.id // empty')
 
 # --- directory (last 2 path segments, like starship's truncation_length=2) ---
 display_dir="${dir/#$HOME/~}"
@@ -68,10 +73,10 @@ seven_d_pct=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percenta
 ctx_pct=$(printf '%s' "$input" | jq -r '.context_window.used_percentage // empty')
 
 usage_parts=()
-[ -n "$five_h_pct" ] && usage_parts+=("5h ${five_h_pct%.*}%")
-[ -n "$seven_d_pct" ] && usage_parts+=("7d ${seven_d_pct%.*}%")
-[ -n "$ctx_pct" ] && usage_parts+=("${ctx_pct%.*}% ctx")
-[ -n "$cost" ] && usage_parts+=("$(printf 'API-Wert ~$%.2f' "$cost")")
+[ -n "$five_h_pct" ] && usage_parts+=("${BOLD_YELLOW}${five_h_pct%.*}%${YELLOW} 5h")
+[ -n "$ctx_pct" ] && usage_parts+=("${BOLD_YELLOW}${ctx_pct%.*}%${YELLOW} ctx")
+[ -n "$seven_d_pct" ] && usage_parts+=("${BOLD_YELLOW}${seven_d_pct%.*}%${YELLOW} 7d")
+[ -n "$cost" ] && usage_parts+=("API-Wert ${BOLD_YELLOW}$(printf '~$%.2f' "$cost")${YELLOW}")
 
 usage_str=""
 if [ "${#usage_parts[@]}" -gt 0 ]; then
@@ -82,6 +87,7 @@ fi
 out=$(printf "${BOLD_CYAN}%s${RESET}" "$short_dir")
 [ -n "$branch" ] && out="$out $(printf "${CYAN}%s${RESET}" "$branch")"
 [ -n "$status_str" ] && out="$out $(printf "${CYAN}%s${RESET}" "$status_str")"
+[ -n "$model_name" ] && out="$out $(printf "${MAGENTA}%s${RESET}" "$model_name")"
 [ -n "$usage_str" ] && out="$out $(printf "${YELLOW}%s${RESET}" "$usage_str")"
 
 printf '%s' "$out"
