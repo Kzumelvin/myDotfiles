@@ -1,8 +1,9 @@
 {
-  "theme": "dark",
-  "agentPushNotifEnabled": true,
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
-  }
+  },
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
+  "model": "opus"
 }
