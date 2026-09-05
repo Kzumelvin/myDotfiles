@@ -1,0 +1,15 @@
+[Unit]
+Description=Dotfiles per git aktualisieren und via GNU Stow einspielen
+Documentation=https://github.com/Kzumelvin/myDotfiles
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/dotfiles-sync
+# Ohne Login-Shell steht ~/.local/bin nicht zwingend im PATH.
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+TimeoutStartSec=120
+
+[Install]
+WantedBy=default.target

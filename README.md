@@ -28,9 +28,19 @@ organisiert. Jeder Ordner spiegelt dabei die Struktur relativ zu `$HOME` wider:
     └── .claude/
         ├── settings.json          # -> ~/.claude/settings.json
         └── statusline-command.sh  # -> ~/.claude/statusline-command.sh
-└── codex/
-    └── .codex/
-        └── config.toml            # -> ~/.codex/config.toml
+├── codex/
+│   └── .codex/
+│       └── config.toml            # -> ~/.codex/config.toml
+├── bin/
+│   └── .local/
+│       └── bin/
+│           └── dotfiles-sync      # -> ~/.local/bin/dotfiles-sync
+└── systemd/
+    └── .config/
+        └── systemd/
+            └── user/
+                ├── dotfiles-sync.service  # -> ~/.config/systemd/user/...
+                └── dotfiles-sync.timer    # -> ~/.config/systemd/user/...
 ```
 
 Das `claude`-Paket enthält bewusst nur die eigene Statusline-Konfiguration
@@ -51,6 +61,7 @@ Zeile deaktiviert.
 
 - Git
 - [GNU Stow](https://www.gnu.org/software/stow/)
+- systemd (für die automatische Aktualisierung beim Login, optional)
 - Neovim in einer mit AstroNvim v6 kompatiblen Version
 - tmux, falls die tmux-Konfiguration verwendet werden soll
 - [Claude Code](https://claude.com/claude-code) mit `jq`, falls die
@@ -78,8 +89,10 @@ werden. Anschließend das Repository klonen und die Pakete mit Stow verlinken:
 ```sh
 git clone https://github.com/Kzumelvin/myDotfiles.git ~/myDotfiles
 cd ~/myDotfiles
-stow -t ~ nvim tmux claude codex
+stow -t ~ nvim tmux claude codex bin systemd
 ```
+
+Danach übernimmt `dotfiles-sync` (siehe unten) alle weiteren Aktualisierungen.
 
 Wichtig: Das Target (`-t ~`) muss immer explizit angegeben werden, da Stow
 sonst standardmäßig das Elternverzeichnis des Repos als Ziel verwendet.
@@ -97,6 +110,60 @@ neu laden:
 ```sh
 tmux source-file ~/.tmux.conf
 ```
+
+## Automatische Aktualisierung (dotfiles-sync)
+
+`bin/.local/bin/dotfiles-sync` aktualisiert das Repository per Git und spielt
+anschließend alle Stow-Pakete ein. Die Pakete werden automatisch erkannt: jedes
+Verzeichnis der obersten Ebene, das mindestens einen Dotfile-Eintrag enthält.
+
+```sh
+dotfiles-sync              # aktualisieren und stowen
+dotfiles-sync --no-pull    # nur stowen, ohne git fetch/pull
+dotfiles-sync --dry-run    # nur anzeigen, was passieren würde
+dotfiles-sync --quiet      # nur Warnungen und Fehler ausgeben
+```
+
+Konfigurierbar über Umgebungsvariablen: `DOTFILES_DIR` (Default `~/myDotfiles`),
+`DOTFILES_TARGET` (Default `$HOME`) und `DOTFILES_PACKAGES` (explizite
+Paketliste statt automatischer Erkennung).
+
+Das Skript arbeitet bewusst konservativ und überschreibt niemals lokale Arbeit:
+
+- Bei lokalen Änderungen im Repository wird das Update übersprungen und nur
+  gestowt.
+- Aktualisiert wird ausschließlich per Fast-Forward. Divergierte Branches,
+  ein fehlender Upstream oder ein detached HEAD führen zu einer Warnung.
+- `git fetch` wird beim Systemstart bis zu dreimal versucht, da das Netzwerk
+  zu diesem Zeitpunkt oft noch nicht bereit ist. Schlägt es fehl, wird
+  trotzdem gestowt.
+- Stow läuft je Paket einzeln (`--restow`). Ein Konflikt bricht die übrigen
+  Pakete nicht ab, wird aber am Ende gemeldet (inkl. `notify-send`, sofern
+  eine Desktop-Sitzung vorhanden ist) und führt zu Exit-Code 1.
+
+### Start beim Login
+
+Der User-Service `systemd/.config/systemd/user/dotfiles-sync.service` führt das
+Skript einmal pro Login aus:
+
+```sh
+systemctl --user enable --now dotfiles-sync.service
+```
+
+Optional zusätzlich einmal täglich (verpasste Läufe werden nachgeholt):
+
+```sh
+systemctl --user enable --now dotfiles-sync.timer
+```
+
+Logs:
+
+```sh
+journalctl --user -u dotfiles-sync.service -n 50
+```
+
+Nach Änderungen an den Unit-Dateien ist ein `systemctl --user daemon-reload`
+erforderlich.
 
 ## tmux-Tastenkürzel
 
