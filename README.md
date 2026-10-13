@@ -2,8 +2,8 @@
 
 Persönliche Konfigurationen für [Neovim](https://neovim.io/) mit
 [AstroNvim v6](https://astronvim.com/), für [tmux](https://github.com/tmux/tmux),
-für [Claude Code](https://claude.com/claude-code) und für
-[Codex](https://developers.openai.com/codex/).
+für [Claude Code](https://claude.com/claude-code), für
+[Codex](https://developers.openai.com/codex/) und für [herdr](https://herdr.dev).
 
 ## Inhalt
 
@@ -31,6 +31,10 @@ organisiert. Jeder Ordner spiegelt dabei die Struktur relativ zu `$HOME` wider:
 ├── codex/
 │   └── .codex/
 │       └── config.toml            # -> ~/.codex/config.toml
+├── herdr/
+│   └── .config/
+│       └── herdr/
+│           └── config.toml        # -> ~/.config/herdr/config.toml
 ├── bin/
 │   └── .local/
 │       └── bin/
@@ -52,6 +56,9 @@ Das `codex`-Paket enthält ebenfalls nur die eigentliche Konfiguration
 (`config.toml`). Zugangsdaten, Sitzungsverläufe, Datenbanken, Logs, Caches und
 lokale Skills unter `~/.codex` bleiben bewusst außerhalb des Repositories.
 
+Das `herdr`-Paket enthält nur `config.toml`. Logs, Sockets und
+Sitzungs-Snapshots unter `~/.config/herdr` bleiben lokal.
+
 Die Neovim-Konfiguration basiert auf AstroNvim v6. `lazy.nvim` wird beim ersten
 Start automatisch installiert. Die Dateien unter `nvim/.config/nvim/lua/plugins/`
 enthalten vorbereitete Beispiele, sind derzeit aber durch die jeweils erste
@@ -68,10 +75,47 @@ Zeile deaktiviert.
   Statusline-Konfiguration verwendet werden soll
 - [Codex](https://developers.openai.com/codex/), falls die Codex-Konfiguration
   verwendet werden soll
+- [herdr](https://herdr.dev), falls die herdr-Konfiguration verwendet werden soll
 - eine [Nerd Font](https://www.nerdfonts.com/) für die korrekte Darstellung
   der Neovim-Symbole (empfohlen)
 
 ## Installation
+
+### Automatisch (install.sh)
+
+`install.sh` führt alle folgenden Schritte automatisch aus (macOS mit Homebrew,
+Debian/Ubuntu, Fedora, Arch, openSUSE):
+
+```sh
+bash <(curl -fsSL https://raw.githubusercontent.com/Kzumelvin/myDotfiles/main/install.sh)
+# oder aus einem vorhandenen Klon:
+~/myDotfiles/install.sh
+```
+
+Das Skript installiert die Voraussetzungen (inkl. aktuellem Neovim, Claude
+Code, Codex, herdr und einer Nerd Font), klont das Repository nach `~/myDotfiles`,
+verschiebt kollidierende Konfigurationen nach `~/.dotfiles-backup/<Zeitstempel>/`,
+stowt alle Pakete über `dotfiles-sync`, aktiviert unter Linux den
+systemd-Service, installiert die Neovim-Plugins gemäß `lazy-lock.json` sowie die
+Mason-Pakete aus der Liste [unten](#manuell-installierte-mason-pakete) und lädt
+eine laufende tmux-Sitzung neu. Es ist idempotent und kann jederzeit erneut
+ausgeführt werden.
+
+```sh
+./install.sh --dry-run           # nur anzeigen, was passieren würde
+./install.sh --skip font,mason   # einzelne Schritte überspringen
+./install.sh --only link         # nur bestimmte Schritte ausführen
+./install.sh --timer             # zusätzlich den täglichen Timer aktivieren
+./install.sh --help              # alle Schritte und Optionen
+```
+
+Verzeichnisse wie `~/.claude`, `~/.codex`, `~/.config/herdr`, `~/.config/systemd/user` und
+`~/.local/bin` werden vor dem Stowen als echte Verzeichnisse angelegt. So
+verlinkt Stow nur die einzelnen Dateien, und lokale Daten (Zugangsdaten,
+Sitzungen, `systemctl enable`-Links, weitere Programme) landen nicht im
+Repository. Nur `~/.config/nvim` wird als Ganzes verlinkt.
+
+### Manuell
 
 Vorhandene Konfigurationen sollten zunächst gesichert werden:
 
@@ -81,6 +125,7 @@ mv ~/.tmux.conf ~/.tmux.conf.bak
 mv ~/.claude/settings.json ~/.claude/settings.json.bak
 mv ~/.claude/statusline-command.sh ~/.claude/statusline-command.sh.bak
 mv ~/.codex/config.toml ~/.codex/config.toml.bak
+mv ~/.config/herdr/config.toml ~/.config/herdr/config.toml.bak
 ```
 
 Nicht vorhandene Dateien oder Verzeichnisse können dabei einfach übersprungen
@@ -89,7 +134,7 @@ werden. Anschließend das Repository klonen und die Pakete mit Stow verlinken:
 ```sh
 git clone https://github.com/Kzumelvin/myDotfiles.git ~/myDotfiles
 cd ~/myDotfiles
-stow -t ~ nvim tmux claude codex bin systemd
+stow -t ~ nvim tmux claude codex herdr bin systemd
 ```
 
 Danach übernimmt `dotfiles-sync` (siehe unten) alle weiteren Aktualisierungen.
